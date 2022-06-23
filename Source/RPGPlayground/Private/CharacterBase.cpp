@@ -3,6 +3,9 @@
 
 #include "CharacterBase.h"
 #include "AttributeSetBase.h"
+#include "GameFramework/PlayerController.h"
+#include "AIController.h"
+#include "BrainComponent.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -11,6 +14,8 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AbilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComp");
 	AttributeSetBaseComp = CreateDefaultSubobject<UAttributeSetBase>("AttributeSetBaseComp");
+	bIsDead = false;
+	TeamID = 255;
 
 }
 
@@ -19,6 +24,7 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	AttributeSetBaseComp->OnHealthChange.AddDynamic(this, &ACharacterBase::OnHealthChanged);
+	AutoDetermineTeamIDByControllerType();
 	
 }
 
@@ -55,7 +61,45 @@ void ACharacterBase::AcquireAbility(TSubclassOf<UGameplayAbility> AbilityToAcqui
 
 void ACharacterBase::OnHealthChanged(float Health, float MaxHealth)
 {
+	if (Health <= 0.0f && !bIsDead)
+	{
+		bIsDead = true;
+		OnDeath();
+		BP_Die();
+	}
 	BP_OnHealthChanged(Health, MaxHealth);
+}
+
+bool ACharacterBase::IsOtherHostile(ACharacterBase* Other)
+{
+	return TeamID != Other->GetTeamID();
+}
+
+uint8 ACharacterBase::GetTeamID() const
+{
+	return TeamID;
+}
+
+void ACharacterBase::AutoDetermineTeamIDByControllerType()
+{
+	if (GetController() && GetController()->IsPlayerController())
+	{
+		TeamID = 0;
+	}
+}
+
+void ACharacterBase::OnDeath()
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		PC->DisableInput(PC);
+	}
+	AAIController* AIC = Cast<AAIController>(GetController());
+	if (AIC)
+	{
+		AIC->GetBrainComponent()->StopLogic("Dead af");
+	}
 }
 
 
