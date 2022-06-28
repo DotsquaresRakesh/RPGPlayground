@@ -27,6 +27,8 @@ void ACharacterBase::BeginPlay()
 	AttributeSetBaseComp->OnManaChange.AddDynamic(this, &ACharacterBase::OnManaChanged);
 	AttributeSetBaseComp->OnStrengthChange.AddDynamic(this, &ACharacterBase::OnStrengthChanged);
 	AutoDetermineTeamIDByControllerType();
+	AddGameplayTag(FullHealthTag);
+
 	
 }
 
@@ -90,6 +92,17 @@ bool ACharacterBase::IsOtherHostile(ACharacterBase* Other)
 uint8 ACharacterBase::GetTeamID() const
 {
 	return TeamID;
+}
+
+void ACharacterBase::AddGameplayTag(FGameplayTag& TagToAdd)
+{
+	GetAbilitySystemComponent()->AddLooseGameplayTag(TagToAdd);
+	GetAbilitySystemComponent()->SetTagMapCount(TagToAdd, 1);
+}
+
+void ACharacterBase::RemoveGameplayTag(FGameplayTag& TagToRemove)
+{
+	GetAbilitySystemComponent()->RemoveLooseGameplayTag(TagToRemove);
 }
 
 void ACharacterBase::AutoDetermineTeamIDByControllerType()

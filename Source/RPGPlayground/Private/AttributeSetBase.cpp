@@ -4,6 +4,7 @@
 #include "AttributeSetBase.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
+#include "CharacterBase.h"
 
 
 UAttributeSetBase::UAttributeSetBase()
@@ -33,6 +34,20 @@ void UAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		Health.SetBaseValue(FMath::Clamp(Health.GetBaseValue(), 0.0f, MaxHealth.GetCurrentValue()));
 		//UE_LOG(LogTemp, Warning, TEXT("Took some damage,now Health is : %f"), Health.GetCurrentValue());
 		OnHealthChange.Broadcast(Health.GetCurrentValue(), MaxHealth.GetCurrentValue());
+		ACharacterBase* CharacterOwner = Cast<ACharacterBase>(GetOwningActor());
+
+		if (Health.GetCurrentValue() == MaxHealth.GetCurrentValue())
+		{
+			if (CharacterOwner)
+			{
+				CharacterOwner->AddGameplayTag(CharacterOwner->FullHealthTag);
+			}
+			else
+				if (CharacterOwner)
+				{
+					CharacterOwner->RemoveGameplayTag(CharacterOwner->FullHealthTag);
+				}
+		}
 	}
 
 	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(UAttributeSetBase::StaticClass(), GET_MEMBER_NAME_CHECKED(UAttributeSetBase, Mana)))
