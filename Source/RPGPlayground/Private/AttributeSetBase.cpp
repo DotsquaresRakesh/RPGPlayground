@@ -11,8 +11,8 @@ UAttributeSetBase::UAttributeSetBase()
 	:Health(200.0f),
 	MaxHealth(200.0f),
 	Mana(100.0f),
-	MaxMana(150.0f),
-	Strength(100.0f),
+	MaxMana(100.0f),
+	Strength(250.0f),
 	MaxStrength(250.0f)
 {
 
@@ -42,12 +42,15 @@ void UAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			{
 				CharacterOwner->AddGameplayTag(CharacterOwner->FullHealthTag);
 			}
-			else
-				if (CharacterOwner)
-				{
-					CharacterOwner->RemoveGameplayTag(CharacterOwner->FullHealthTag);
-				}
 		}
+		else
+		{
+			if (CharacterOwner)
+			{
+				CharacterOwner->RemoveGameplayTag(CharacterOwner->FullHealthTag);
+			}
+		}
+		
 	}
 
 	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(UAttributeSetBase::StaticClass(), GET_MEMBER_NAME_CHECKED(UAttributeSetBase, Mana)))

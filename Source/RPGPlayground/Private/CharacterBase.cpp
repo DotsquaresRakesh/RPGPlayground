@@ -98,11 +98,13 @@ void ACharacterBase::AddGameplayTag(FGameplayTag& TagToAdd)
 {
 	GetAbilitySystemComponent()->AddLooseGameplayTag(TagToAdd);
 	GetAbilitySystemComponent()->SetTagMapCount(TagToAdd, 1);
+	UE_LOG(LogTemp, Warning, TEXT("Added Tag "));
 }
 
 void ACharacterBase::RemoveGameplayTag(FGameplayTag& TagToRemove)
 {
 	GetAbilitySystemComponent()->RemoveLooseGameplayTag(TagToRemove);
+	UE_LOG(LogTemp, Warning, TEXT("Removed Tag "));
 }
 
 void ACharacterBase::AutoDetermineTeamIDByControllerType()
