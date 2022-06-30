@@ -107,6 +107,8 @@ void ACharacterBase::RemoveGameplayTag(FGameplayTag& TagToRemove)
 	UE_LOG(LogTemp, Warning, TEXT("Removed Tag "));
 }
 
+
+
 void ACharacterBase::AutoDetermineTeamIDByControllerType()
 {
 	if (GetController() && GetController()->IsPlayerController())
@@ -116,6 +118,11 @@ void ACharacterBase::AutoDetermineTeamIDByControllerType()
 }
 
 void ACharacterBase::OnDeath()
+{
+	DisableInputControl();
+}
+
+void ACharacterBase::DisableInputControl()
 {
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (PC)
@@ -129,4 +136,26 @@ void ACharacterBase::OnDeath()
 	}
 }
 
+void ACharacterBase::EnableInputControl()
+{
+	if (!bIsDead)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC)
+		{
+			PC->EnableInput(PC);
+		}
+		AAIController* AIC = Cast<AAIController>(GetController());
+		if (AIC)
+		{
+			AIC->GetBrainComponent()->RestartLogic();
+		}
+	}
+}
+
+void ACharacterBase::HitStun(float StunDuration)
+{
+	DisableInputControl();
+	GetWorldTimerManager().SetTimer(StunTimeHandle, this, &ACharacterBase::EnableInputControl,StunDuration,false);
+}
 
