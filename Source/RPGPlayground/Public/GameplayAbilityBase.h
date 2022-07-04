@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include <AbilityTypes.cpp>
+#include <AbilityTypes.h>
 #include "GameplayAbilityBase.generated.h"
 
 /**
@@ -20,5 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AbilityBase")
 		FGameplayAbilityInfo GetAbilityInfo();   //struct inside AbilityType
+
+	
 	
 };
